@@ -1,0 +1,11 @@
+{
+  "name": "kenny-local",
+  "owner": { "name": "Bruno" },
+  "plugins": [
+    {
+      "name": "kenny-loop",
+      "source": "./kenny-loop",
+      "description": "Minimal flag-file driven session loop"
+    }
+  ]
+}

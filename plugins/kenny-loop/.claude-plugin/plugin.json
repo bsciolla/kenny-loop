@@ -1,0 +1,7 @@
+{
+  "name": "kenny-loop",
+  "version": "0.1.0",
+  "description": "Minimal flag-file driven session loop. /kenny-loop <flag> <prompt> runs the prompt, replays on Stop until <flag> file appears. Session-scoped: stale state from killed sessions never rehacks.",
+  "author": "Bruno Sciolla <dummy@dummy.com>",
+  "license": "MIT"
+}

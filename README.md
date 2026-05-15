@@ -63,13 +63,13 @@ Launch with
 ```
 
 The root file `superplan.md` is the task description for every spawned agent. This file holds the overarching goal and a checklist of tasks. Each agent has to pick the next task and attempt to do it.
-Each task carries a **flavour** — `<plan>`, `<design>`, `<implement>`, `<test>`, `<report>` — and each flavour points to its own instruction file.
+Each task carries a **task kind** — `<project-manage>`, `<design>`, `<implement>`, `<test>`, `<report>` — and each kind points to its own instruction file.
 
 ```
 superplan/
-├── superplan.md       ← entry point: contains the plan and the progress
-├── plan-task.md       ← flavour type instructions
-├── design-task.md     ← flavour type instructions
+├── superplan.md              ← entry point: contains the plan and the progress
+├── project-manage-task.md    ← task kind instructions
+├── design-task.md            ← task kind instructions
 ├── implement-task.md
 ├── test-task.md
 └── report-task.md
@@ -84,18 +84,18 @@ superplan/
 
 #### Remark - subagents
 
-- the flavours emulate the notion of "specialized subagents" in a more flexible way
+- the task kinds emulate the notion of "specialized subagents" in a more flexible way
 - you should craft yourself the choice of relevant agents (the plan, design, implement, etc. are just examples) and their instructions
 
 #### Remark - meta
 
-- the higher level <plan> agent should write the list of tasks itself! However it needs some help figuring out how. A skeleton is often enough to start.
+- the higher level <project-manage> agent should write the list of tasks itself! However it needs some help figuring out how. A skeleton is often enough to start.
 
 ```
 List of tasks
 -------------
 
-[ ] - <plan> - investigate where code changes are necessary
+[ ] - <project-manage> - investigate where code changes are necessary
 [ ] - <design> - prepare full dev plan
 [ ] - <implement> - ...
 [ ] - <test> - ...
@@ -103,7 +103,7 @@ List of tasks
 
 ```
 
-- (optional) suggest your <plan> agent to edit flavour files to solve problems encountered
+- (optional) suggest your <project-manage> agent to edit task-kind files to solve problems encountered
 
 #### Remark - interactivity
 

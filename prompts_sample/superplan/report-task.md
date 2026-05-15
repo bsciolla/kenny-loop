@@ -1,6 +1,4 @@
+# `<report>` task description
 
-<report> task description
--------------
-
-- Inspect the progress made
-- Write a user-oriented report [report-slug-datetime.md]
+- Inspect the progress made.
+- Write a user-oriented report `[report-slug-datetime.md]`.

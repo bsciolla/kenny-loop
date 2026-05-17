@@ -15,7 +15,7 @@ Each task has a status:
 
 ## What to do if no task remains
 
-If all tasks are `[X]` or `[A]`, then write a flag termination file called `DONE`.
+If all tasks are `[X]` or `[A]`, then write a flag termination file called `DONE.flag`.
 
 ## Action if any task remains
 

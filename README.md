@@ -15,7 +15,7 @@ kenny-loop/
 kenny-loop is a variant of the **Ralph loop** — a pattern popularised by Geoff Huntley in 2024 for getting long-running work out of an LLM agent. The original Ralph loop is a tiny shell script: invoke `claude` with a prompt, check a stop condition, repeat. The agent does one bounded chunk of work per invocation, exits when the call returns, and a fresh invocation picks up by re-reading the project state.
 
 This project has two main contributions :
-- The actual kenny-loop plugin has less friction on initialization, resuming, concurrent loops than [byigitt](https://github.com/byigitt/ralph-wiggum-windows) and enable more interactive control than other frameworks .
+- The actual kenny-loop plugin has less friction on initialization, resuming, concurrent loops than [byigitt](https://github.com/byigitt/ralph-wiggum-windows).
 - The superplan orchestration pattern given as sample 2 is a nice levarage tool in and by itself.
 
 
@@ -24,24 +24,21 @@ This project has two main contributions :
 - For Windows so based on PowerShell. Inspired from [byigitt ralph-wiggum-windows](https://github.com/byigitt/ralph-wiggum-windows)
 - Like the above it is a plugin inside Claude Code : you start a looping task with a prompt and a flag file name; the assistant keeps working on the prompt, and every time it would normally stop, the Stop hook kicks it back into action. Advantages : the context window can persist a little while accross instances of the loop. It's also much easier to monitor and possible to add feedback to the console.
 - The flag file is the stop criterion, and that's deliberately the only stop criterion. Some agent has to create the file; the loop sees it; the loop ends. Timeouts or iteration counts are not supported.
-- Project-scoped: two repos can both have a `DONE.flag` loop running and they won't interfere.
+- File-scoped: run several loops with different `DONE<loop>.flag` on one repository/root directory, they won't interfere.
 - A killed session never auto-resumes. Resuming can be done on demand `/kenny-loop-resume <flag-file>`.
- 
-The loop is robust across sessions: if the Claude Code session that started the loop crashes or is closed, the state isn't lost. You open a new session, run `/kenny-loop-resume`, and the loop picks up where it left off. Conversely, a loop only ever runs in the session it was started in (or explicitly resumed from) — a dead session's state never auto-fires in some unrelated future session.
-
-Multiple loops can run concurrently — one per project directory, one per flag name — without colliding.
 
 
+## Install (local marketplace)
 
+```
+/plugin marketplace add kenny-loop\plugins
+/plugin install kenny-loop@kenny-local
+```
 
-- Lives as a Claude Code plugin, not an external shell script.
+Once installed, the marketplace entry (`plugins/.claude-plugin/marketplace.json`) registers `kenny-loop` under the local marketplace `kenny-local`. The plugin manifest (`.claude-plugin/plugin.json`) declares the package; Claude Code auto-discovers the `commands/` directory for slash commands and `hooks/hooks.json` for hook registrations.
+For **implementation details**, see [`plugins/kenny-loop/README.md`](plugins/kenny-loop/README.md).
 
-- Stop condition is a real file you can `ls` and `rm`, not a magic string in a state file.
-- A killed session never auto-resumes. Resume is an explicit decision.
-
-For install instructions, hook internals, state file format, and other implementation details, see [`plugins/kenny-loop/README.md`](plugins/kenny-loop/README.md).
-
-### Commands
+## How to use - commands
 
 - **`/kenny-loop <flag-file> <prompt>`** — start a loop. The assistant works on `<prompt>`, replaying every turn until `<flag-file>` exists.
 - **`/kenny-loop-stop <flag-file>`** — end a running loop by creating its flag file. You can also just `New-Item DONE.flag` from your shell.
@@ -57,7 +54,7 @@ Launch with
 /kenny-loop DONE.flag execute the task described in [your-version-of-simple.md]
 ```
 
-A flat checklist. Each item is a `[ ]` TODO; the loop walks the list, marking items `[-]` (in progress), `[X]` (done), or `[A]` (aborted with a report). When all items are `[X]` or `[A]`, it writes the flag file and stops.
+The instruction file [`simple.md`](prompts_sample/simple.md) is a flat checklist and the self-contained explanation of checkboxes. Each item is a `[ ]` TODO; the loop walks the list, marking items `[-]` (in progress), `[X]` (done), or `[A]` (aborted with a report). When all items are `[X]` or `[A]`, it writes the flag file and stops.
 
 Use when:
 - the work is a known, ordered list of small steps
@@ -71,7 +68,7 @@ Launch with
 /kenny-loop DONE.flag execute the plan described in [your-version-of-superplan.md]
 ```
 
-The root file `superplan.md` is the task description for every spawned agent. This file holds the overarching goal and a checklist of tasks. Each agent has to pick the next task and attempt to do it.
+The root file [`superplan.md`](prompts_sample/superplan/superplan.md) is the task description for every spawned agent. This file holds the overarching goal and a checklist of tasks. Each agent has to pick the next task and attempt to do it.
 Each task carries a **task kind** — `<project-manage>`, `<design>`, `<implement>`, `<test>`, `<report>` — and each kind points to its own instruction file.
 
 ```
@@ -98,7 +95,7 @@ superplan/
 
 #### Remark - meta
 
-- the higher level <project-manage> agent should write the list of tasks itself! However it needs some help figuring out how. A skeleton is often enough to start.
+- the higher level `<project-manage>` agent should write the list of tasks itself! However it needs some help figuring out how. A skeleton is often enough to start.
 
 ```
 List of tasks

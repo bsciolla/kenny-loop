@@ -14,19 +14,28 @@ kenny-loop/
 
 kenny-loop is a variant of the **Ralph loop** — a pattern popularised by Geoff Huntley in 2024 for getting long-running work out of an LLM agent. The original Ralph loop is a tiny shell script: invoke `claude` with a prompt, check a stop condition, repeat. The agent does one bounded chunk of work per invocation, exits when the call returns, and a fresh invocation picks up by re-reading the project state.
 
-kenny-loop keeps the spirit but moves the machinery inside Claude Code. You give it a prompt and a flag file name; the assistant keeps working on the prompt, and every time it would normally stop, the Stop hook kicks it back into action — until the flag file appears on disk. At that point the loop ends.
+This project has two main contributions :
+- The actual kenny-loop plugin has less friction on initialization, resuming, concurrent loops than [byigitt](https://github.com/byigitt/ralph-wiggum-windows) and enable more interactive control than other frameworks .
+- The superplan orchestration pattern given as sample 2 is a nice levarage tool in and by itself.
 
-The flag file is the stop criterion, and that's deliberately the only stop criterion. Some agent has to create the file; the loop sees it; the loop ends. Timeouts or iteratfion counts are not supported.
 
+### What is specific to this implementation
+
+- For Windows so based on PowerShell. Inspired from [byigitt ralph-wiggum-windows](https://github.com/byigitt/ralph-wiggum-windows)
+- Like the above it is a plugin inside Claude Code : you start a looping task with a prompt and a flag file name; the assistant keeps working on the prompt, and every time it would normally stop, the Stop hook kicks it back into action. Advantages : the context window can persist a little while accross instances of the loop. It's also much easier to monitor and possible to add feedback to the console.
+- The flag file is the stop criterion, and that's deliberately the only stop criterion. Some agent has to create the file; the loop sees it; the loop ends. Timeouts or iteration counts are not supported.
+- Project-scoped: two repos can both have a `DONE.flag` loop running and they won't interfere.
+- A killed session never auto-resumes. Resuming can be done on demand `/kenny-loop-resume <flag-file>`.
+ 
 The loop is robust across sessions: if the Claude Code session that started the loop crashes or is closed, the state isn't lost. You open a new session, run `/kenny-loop-resume`, and the loop picks up where it left off. Conversely, a loop only ever runs in the session it was started in (or explicitly resumed from) — a dead session's state never auto-fires in some unrelated future session.
 
 Multiple loops can run concurrently — one per project directory, one per flag name — without colliding.
 
-### How it differs from the original Ralph loop
 
-- Windows / PowerShell first, not a port of the bash version.
+
+
 - Lives as a Claude Code plugin, not an external shell script.
-- Project-scoped: two repos can both have a `DONE.flag` loop running and they won't interfere.
+
 - Stop condition is a real file you can `ls` and `rm`, not a magic string in a state file.
 - A killed session never auto-resumes. Resume is an explicit decision.
 
